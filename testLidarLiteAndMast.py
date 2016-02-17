@@ -1,5 +1,5 @@
 import time
-from lidar_lite import Lidar_Lite
+from lidarLite import Lidar_Lite
 from mastMotor import *
 
 lidar = Lidar_Lite()

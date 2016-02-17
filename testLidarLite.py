@@ -1,4 +1,4 @@
-from lidar_lite import Lidar_Lite
+from lidarLite import Lidar_Lite
 import time
 
 lidar = Lidar_Lite()
