@@ -1,3 +1,7 @@
+#!/usr/bin/python
+
+import sys
+sys.path.append('..')
 from mastMotor import *
 
 def test(): 

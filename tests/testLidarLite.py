@@ -1,3 +1,7 @@
+#!/usr/bin/python
+
+import sys
+sys.path.append('..')
 from lidarLite import Lidar_Lite
 import time
 

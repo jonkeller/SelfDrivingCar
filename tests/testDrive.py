@@ -1,5 +1,9 @@
+#!/usr/bin/python
+
 import io
 import time
+import sys
+sys.path.append('..')
 from wheelMotors import *
 
 def testLeftMotor(count):

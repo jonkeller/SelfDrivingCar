@@ -1,4 +1,8 @@
+#!/usr/bin/python
+
 import time
+import sys
+sys.path.append('..')
 from lidarLite import Lidar_Lite
 from mastMotor import *
 
