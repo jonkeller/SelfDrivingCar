@@ -1,4 +1,5 @@
 from lidar_lite import Lidar_Lite
+import time
 
 lidar = Lidar_Lite()
 connected = lidar.connect(1)
@@ -8,5 +9,12 @@ if connected <= -1:
     exit(1)
 
 print "Connected"
-print "Distance:", lidar.getDistance(), "cm"
-print "Velocity:", lidar.getVelocity()
+for i in range(100):
+    try:
+        time.sleep(1)
+        distance = lidar.getDistance()
+        print "Distance:", distance, "cm"
+    except:
+        print "Exception"
+        pass
+#print "Velocity:", lidar.getVelocity()
