@@ -50,4 +50,16 @@ for i in [LEFT_ANGLE, LEFT_ANGLE/2, CENTER_ANGLE, RIGHT_ANGLE/2, RIGHT_ANGLE]:
     tilt(i)
     time.sleep(3)
 
+print "Now to move interactively:"
+print "At any time, type something that isn't an integer to quit."
+
+while True:
+    try:
+        degrees = int(raw_input('How many degrees to pan? '))
+        pan(degrees)
+        degrees = int(raw_input('How many degrees to tilt? '))
+        tilt(degrees)
+    except ValueError:
+        break
+
 GPIO.cleanup()
