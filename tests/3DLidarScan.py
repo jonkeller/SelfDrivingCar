@@ -49,10 +49,13 @@ print "Pan_Angle, Tilt_Angle, Distance (cm)"
 INCREMENT = 2
 for t in range(TILT_MIN_ANGLE, TILT_MAX_ANGLE+1, INCREMENT):
     for p in range(PAN_MIN_ANGLE, PAN_MAX_ANGLE+1, INCREMENT):
-        time.sleep(SLEEP_TIME)
-        distance = lidar.getDistance()
-        print p, ",", t, ",", distance
-    except:
-        print p, ",", t, ",", -1
-        #print "Exception"
-        pass
+        try:
+            time.sleep(SLEEP_TIME)
+            distance = lidar.getDistance()
+            print p, ",", t, ",", distance
+        except:
+            print p, ",", t, ",", -1
+            pass
+
+cleanup()
+
