@@ -1,65 +1,49 @@
 #!/usr/bin/python
 
-import RPi.GPIO as GPIO
+from RPIO import PWM
 import time
+import sys
 
-PAN_SERVO_PIN = 23
-TILT_SERVO_PIN = 24
+PAN_SERVO_PIN = 14
+TILT_SERVO_PIN = 8
+RIGHT = 560
+LEFT = 2500
+CENTER = (LEFT + RIGHT) / 2
+GRANULARITY_MICROSECONDS = 10
 
-RIGHT = 23 # 23% of 100Hz, which is 2.3ms
-LEFT = 1
-CENTER = (RIGHT+LEFT)/2.0
-HALF_RANGE = CENTER-LEFT
-
-RIGHT_ANGLE = 65.0 # My servo goes from about +65 degrees to about -65 degrees
-LEFT_ANGLE = -RIGHT_ANGLE
-CENTER_ANGLE = 0
-
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(PAN_SERVO_PIN, GPIO.OUT)
-GPIO.setup(TILT_SERVO_PIN, GPIO.OUT)
-
-frequency = 100 # In Hz
-pan_pwm = GPIO.PWM(PAN_SERVO_PIN, frequency)
-tilt_pwm = GPIO.PWM(TILT_SERVO_PIN, frequency)
-pan_pwm.start(CENTER)
-tilt_pwm.start(CENTER)
+servo = PWM.Servo()
 
 def pan(angle):
-    move_servo(pan_pwm, angle)
+    us = angleToMicroseconds(angle)
+    print angle, us, RIGHT, LEFT
+    servo.set_servo(PAN_SERVO_PIN, us)
 
 def tilt(angle):
-    move_servo(tilt_pwm, angle)
+    us = angleToMicroseconds(angle)
+    print angle, us, RIGHT, LEFT
+    servo.set_servo(TILT_SERVO_PIN, us)
 
-def move_servo(servo_pwm, angle):
-    # For my particular servo, the angle is -65...65
-    # Experimentation indicates that we want to set pulse width to 1ms for -65, 1.2ms for 0, and 2.3ms for 65
-    # We want duty to be expressed as a percentage of frequency.
-    # So that is 1% of the 100Mhz frequency for -65, 12% for 0, and 23% for 65 degrees
-    duty = (HALF_RANGE*float(angle)/RIGHT_ANGLE) + CENTER
-    servo_pwm.ChangeDutyCycle(duty)
+def angleToMicroseconds(angle):
+    us = int(((angle + 90) * ((LEFT-RIGHT)/(180.0))) + RIGHT)
+    us -= (us % GRANULARITY_MICROSECONDS)
+    return us
 
-for i in [LEFT_ANGLE, LEFT_ANGLE/2, CENTER_ANGLE, RIGHT_ANGLE/2, RIGHT_ANGLE]:
-    print "Moving to pan", i, "degrees"
-    pan(i)
-    time.sleep(3)
-
-for i in [LEFT_ANGLE, LEFT_ANGLE/2, CENTER_ANGLE, RIGHT_ANGLE/2, RIGHT_ANGLE]:
-    print "Moving to tilt", i, "degrees"
-    tilt(i)
-    time.sleep(3)
-
-print "Now to move interactively:"
 print "At any time, type something that isn't an integer to quit."
-
 while True:
     try:
-        degrees = int(raw_input('How many degrees to pan? '))
-        pan(degrees)
-        degrees = int(raw_input('How many degrees to tilt? '))
-        tilt(degrees)
+        angle = int(raw_input('Enter angle to pan in degrees (-90...90)? '))
+        pan(angle)
+        angle = int(raw_input('Enter angle to tilt in degrees (-90...90)? '))
+        tilt(angle)
     except ValueError:
+        print "Okay, stopping."
+        break
+    except (RuntimeError, TypeError, NameError, AttributeError) as detail:
+        print "Unexpected error:", detail
+    except:
+        print "Unexpected error:", sys.exc_info()[0]
         break
 
-GPIO.cleanup()
+servo.stop_servo(PAN_SERVO_PIN)
+#servo.stop_servo(TILT_SERVO_PIN)
+
