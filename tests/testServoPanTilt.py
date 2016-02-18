@@ -45,5 +45,5 @@ while True:
         break
 
 servo.stop_servo(PAN_SERVO_PIN)
-#servo.stop_servo(TILT_SERVO_PIN)
+servo.stop_servo(TILT_SERVO_PIN)
 
