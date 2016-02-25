@@ -13,7 +13,7 @@ LEFT = 2500
 CENTER = (LEFT + RIGHT) / 2
 GRANULARITY_MICROSECONDS = 10
 TILT_MIN_ANGLE = -45
-TILT_MAX_ANGLE = 90
+TILT_MAX_ANGLE = 85
 PAN_MIN_ANGLE = -90
 PAN_MAX_ANGLE = 90
 SLEEP_TIME = 0.02
@@ -44,19 +44,36 @@ if connected <= -1:
     print "Not Connected"
     exit(1)
 
-print "Pan_Angle, Tilt_Angle, Distance (cm), Error"
 INCREMENT = 2
+W = 1 + (PAN_MAX_ANGLE - PAN_MIN_ANGLE) / INCREMENT
+H = 1 + (TILT_MAX_ANGLE - TILT_MIN_ANGLE) / INCREMENT
+MaxDepth = 0
+depths = [[0 for x in range(W+1)] for y in range(H+1)]
+
+i=0;
 for t in range(TILT_MIN_ANGLE, TILT_MAX_ANGLE+1, INCREMENT):
     tilt(t)
+    j=0
     for p in range(PAN_MIN_ANGLE, PAN_MAX_ANGLE+1, INCREMENT):
         pan(p)
         try:
             time.sleep(SLEEP_TIME)
-            distance = lidar.getDistance()
-            print p, ",", t, ",", distance, ","
+            depth = lidar.getDistance()
+            if depth > MaxDepth:
+                MaxDepth = depth
+            depths[i][j] = depth
         except:
-            print p, ",", t, ",", -1, sys.exc_info()[0]
             pass
+        j+=1
+    i+=1
+
+print "P2"
+print W, H   #"91 57"
+print MaxDepth
+for y in range(i):
+    for x in range(j):
+        print depths[y][x],
+    print ""
 
 cleanup()
 
